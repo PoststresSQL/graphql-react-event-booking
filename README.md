@@ -5,5 +5,5 @@ This is a web app that will introduce me to the world of GraphQL. I'll be using 
 So Far, to get started you can run:
 
 - Clone the Repository
-- `$npm i` to install dependencies
-- `npm start` to run the start script which uses nodemon to start the express server 
+- `$ npm i` to install dependencies
+- `$ npm start` to run the start script which uses nodemon to start the express server 
