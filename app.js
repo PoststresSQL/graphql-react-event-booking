@@ -6,13 +6,15 @@ const { buildSchema } = require('graphql')
 // app creation using express app object
 const app = express()
 
+// Global 'Events' var to mock event DB for storage.
+const events = []
+
 // have the app use body-parser's JSON functionality for parsing incoming JSON data
 app.use(bodyParser.json())
 
 // Root Query holds all base query for graphql; Read
 // RootMutation holds any mutations; Creates, Updates,or Deletes
 // RootValue is a bundle of all Resolvers
-
 app.use('/graphql', graphqlHttp({
     schema: buildSchema(`
         type Event {
@@ -23,12 +25,19 @@ app.use('/graphql', graphqlHttp({
             date: String!
         }
 
+        input EventArgs {
+            title: String!
+            description: String!
+            price: Float!
+            date: String!
+        }
+
         type RootQuery {
-            events: [String!]!
+            events: [Event!]!
         }
 
         type RootMutation {
-            createEvent(name: String): String
+            createEvent(eventArgs: EventArgs): String
         }
 
         schema {
@@ -38,16 +47,18 @@ app.use('/graphql', graphqlHttp({
     `),
     rootValue: {
         events: () => {
-            return [
-                'Romantic Cooking',
-                'Sailing',
-                'All-Night Coding'
-            ]
+            return events
         },
         createEvent: (args) => {
-            const eventName = args.name
+            const event = {
+                _id: Math.random().toString(),
+                title: args.title,
+                description: args.description,
+                price: +args.price,
+                date: new Date().toISOString(),
+            }
 
-            return eventName
+            events.push(event)
         }
     },
     // UI for GraphQL to test queries
