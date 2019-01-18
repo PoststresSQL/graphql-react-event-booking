@@ -15,6 +15,14 @@ app.use(bodyParser.json())
 
 app.use('/graphql', graphqlHttp({
     schema: buildSchema(`
+        type Event {
+            _id: ID!
+            title: String!
+            description: String!
+            price: Float!
+            date: String!
+        }
+
         type RootQuery {
             events: [String!]!
         }
