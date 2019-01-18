@@ -9,22 +9,18 @@ const app = express()
 // have the app use body-parser's JSON functionality for parsing incoming JSON data
 app.use(bodyParser.json())
 
-// // app listens to req to the root directory and will respond with 'Hello World!' displayed on the user's browser
-// app.get('/', (req, res, next) => {
-//     res.send('Hello World!')
-// })
-
 // Root Query holds all base query for graphql; Read
 // RootMutation holds any mutations; Creates, Updates,or Deletes
+// RootValue is a bundle of all Resolvers
 
 app.use('/graphql', graphqlHttp({
     schema: buildSchema(`
         type RootQuery {
-            events: [String]
+            events: [String!]!
         }
 
         type RootMutation {
-
+            createEvent(name: String): String
         }
 
         schema {
@@ -32,7 +28,22 @@ app.use('/graphql', graphqlHttp({
             mutation: RootMutation
         }
     `),
-    rootValue: {}
+    rootValue: {
+        events: () => {
+            return [
+                'Romantic Cooking',
+                'Sailing',
+                'All-Night Coding'
+            ]
+        },
+        createEvent: (args) => {
+            const eventName = args.name
+
+            return eventName
+        }
+    },
+    // UI for GraphQL to test queries
+    graphiql: true
 }))
 
 // app runs on port 3000
