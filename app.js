@@ -37,7 +37,7 @@ app.use('/graphql', graphqlHttp({
         }
 
         type RootMutation {
-            createEvent(eventArgs: EventArgs): String
+            createEvent(eventArgs: EventArgs): Event
         }
 
         schema {
@@ -52,13 +52,14 @@ app.use('/graphql', graphqlHttp({
         createEvent: (args) => {
             const event = {
                 _id: Math.random().toString(),
-                title: args.title,
-                description: args.description,
-                price: +args.price,
-                date: new Date().toISOString(),
+                title: args.eventArgs.title,
+                description: args.eventArgs.description,
+                price: +args.eventArgs.price,
+                date: args.eventArgs.date,
             }
 
             events.push(event)
+            return event
         }
     },
     // UI for GraphQL to test queries
