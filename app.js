@@ -72,7 +72,7 @@ app.use('/graphql', graphqlHttp({
             .save()
             .then(result => {
                 console.log(result)
-                return {...result._doc}
+                return { ...result._doc, _id: event._doc._id.toString() }
             })
             .catch(err => {
                 console.log(err)
