@@ -70,11 +70,11 @@ app.use('/graphql', graphqlHttp({
             event.save()
             .then(result => {
                 console.log(result)
+                return {...result._doc}
             })
             .catch(err => {
                 console.log(err)
             })
-            return event
         }
     },
     // UI for GraphQL to test queries
