@@ -52,13 +52,6 @@ app.use('/graphql', graphqlHttp({
             return events
         },
         createEvent: (args) => {
-            // const event = {
-            //     _id: Math.random().toString(),
-            //     title: args.eventArgs.title,
-            //     description: args.eventArgs.description,
-            //     price: +args.eventArgs.price,
-            //     date: args.eventArgs.date,
-            // }
             const event = new Event({
                 title: args.eventArgs.title,
                 description: args.eventArgs.description,
@@ -67,13 +60,15 @@ app.use('/graphql', graphqlHttp({
             })
             // save method brought in by mongoose that will
             // push to the connected db
-            event.save()
+            return event
+            .save()
             .then(result => {
                 console.log(result)
                 return {...result._doc}
             })
             .catch(err => {
                 console.log(err)
+                throw err
             })
         }
     },
