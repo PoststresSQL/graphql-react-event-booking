@@ -5,11 +5,11 @@ const { buildSchema } = require('graphql')
 // Connecting to MongoDB through Mongoose
 const mongoose = require('mongoose')
 
+// Models
+const Event = require('./models/event')
+
 // app creation using express app object
 const app = express()
-
-// Global 'Events' var to mock event DB for storage.
-const events = []
 
 // have the app use body-parser's JSON functionality for parsing incoming JSON data
 app.use(bodyParser.json())
@@ -52,15 +52,28 @@ app.use('/graphql', graphqlHttp({
             return events
         },
         createEvent: (args) => {
-            const event = {
-                _id: Math.random().toString(),
+            // const event = {
+            //     _id: Math.random().toString(),
+            //     title: args.eventArgs.title,
+            //     description: args.eventArgs.description,
+            //     price: +args.eventArgs.price,
+            //     date: args.eventArgs.date,
+            // }
+            const event = new Event({
                 title: args.eventArgs.title,
                 description: args.eventArgs.description,
                 price: +args.eventArgs.price,
-                date: args.eventArgs.date,
-            }
-
-            events.push(event)
+                date: new Date(args.eventArgs.date)
+            })
+            // save method brought in by mongoose that will
+            // push to the connected db
+            event.save()
+            .then(result => {
+                console.log(result)
+            })
+            .catch(err => {
+                console.log(err)
+            })
             return event
         }
     },
