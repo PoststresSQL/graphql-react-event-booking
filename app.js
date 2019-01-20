@@ -94,7 +94,7 @@ app.use('/graphql', graphqlHttp({
         },
         createUser: (args) => {
             // Check DB for a user with same email as one being created
-            User.findOne({
+            return User.findOne({
                 email: args.userArgs.email
             })
                 .then( user => {
