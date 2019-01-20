@@ -93,18 +93,32 @@ app.use('/graphql', graphqlHttp({
                 })
         },
         createUser: (args) => {
-            return bcrypt.hash(args.userArgs.password, 12)
-                .then(hashedPassword => {
-                    const user = new User({
-                        email: args.userArgs.email,
-                        password: hashedPassword
-                    })
-                    return user.save()
+            // Check DB for a user with same email as one being created
+            User.findOne({
+                email: args.userArgs.email
+            })
+                .then( user => {
+                    // If User already has the email, throw an error
+                    if(user) {
+                        throw new Error('User Already Exists')
+                    } 
+                    // otherwise, hash password and store user
+                    return bcrypt.hash(args.userArgs.password, 12)
+                        .then(hashedPassword => {
+                            const user = new User({
+                                email: args.userArgs.email,
+                                password: hashedPassword
+                            })
+                            return user.save()
+                        })
+                        .then(result => {
+                            return { ...result._doc, password: null, _id: result._doc._id.toString() }
+                        })
+                        .catch(err => {
+                            throw err
+                        })
                 })
-                .then(result => {
-                    return { ...result._doc, _id: result._doc._id.toString() }
-                })
-                .catch(err => {
+                .catch( err => {
                     throw err
                 })
         }
