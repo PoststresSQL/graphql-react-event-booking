@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 
 // Models
 const Event = require('./models/event')
+const User = require('./models/user')
 
 // app creation using express app object
 const app = express()
@@ -17,6 +18,7 @@ app.use(bodyParser.json())
 // Root Query holds all base query for graphql; Read
 // RootMutation holds any mutations; Creates, Updates,or Deletes
 // RootValue is a bundle of all Resolvers
+// Allowing null password in User type so it can't be returned from DB
 app.use('/graphql', graphqlHttp({
     schema: buildSchema(`
         type Event {
@@ -26,12 +28,23 @@ app.use('/graphql', graphqlHttp({
             price: Float!
             date: String!
         }
+        
+        type User {
+            _id: ID!
+            email: String!
+            password: String
+        }
 
         input EventArgs {
             title: String!
             description: String!
             price: Float!
             date: String!
+        }
+        
+        input UserArgs {
+            email: String!
+            password: String!
         }
 
         type RootQuery {
@@ -40,6 +53,7 @@ app.use('/graphql', graphqlHttp({
 
         type RootMutation {
             createEvent(eventArgs: EventArgs): Event
+            createUser(userArgs: UserArgs): User
         }
 
         schema {
@@ -77,6 +91,12 @@ app.use('/graphql', graphqlHttp({
             .catch(err => {
                 console.log(err)
                 throw err
+            })
+        },
+        createUser: (args) => {
+            const user = new User({
+                email: args.userArgs.email,
+                password: args.userArgs.password
             })
         }
     },
