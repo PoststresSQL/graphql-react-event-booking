@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const graphqlHttp = require('express-graphql')
 const { buildSchema } = require('graphql')
+const bcrypt = require('bcryptjs')
 // Connecting to MongoDB through Mongoose
 const mongoose = require('mongoose')
 
@@ -83,21 +84,29 @@ app.use('/graphql', graphqlHttp({
             // save method brought in by mongoose that will
             // push to the connected db
             return event
-            .save()
-            .then(result => {
-                console.log(result)
-                return { ...result._doc, _id: event._doc._id.toString() }
-            })
-            .catch(err => {
-                console.log(err)
-                throw err
-            })
+                .save()
+                .then(result => {
+                    return { ...result._doc, _id: event._doc._id.toString() }
+                })
+                .catch(err => {
+                    throw err
+                })
         },
         createUser: (args) => {
-            const user = new User({
-                email: args.userArgs.email,
-                password: args.userArgs.password
-            })
+            return bcrypt.hash(args.userArgs.password, 12)
+                .then(hashedPassword => {
+                    const user = new User({
+                        email: args.userArgs.email,
+                        password: hashedPassword
+                    })
+                    return user.save()
+                })
+                .then(result => {
+                    return { ...result._doc, _id: result._doc._id.toString() }
+                })
+                .catch(err => {
+                    throw err
+                })
         }
     },
     // UI for GraphQL to test queries
