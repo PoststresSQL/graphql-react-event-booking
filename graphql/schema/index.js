@@ -5,6 +5,14 @@ const { buildSchema } = require('graphql')
 // RootValue is a bundle of all Resolvers
 // Allowing null password in User type so it can't be returned from DB
 module.exports = buildSchema(`
+    type Booking {
+        _id: ID!
+        event: Event!
+        user: User!
+        createdAt: String!
+        updatedAt: String!
+    }
+
     type Event {
         _id: ID!
         title: String!
@@ -35,11 +43,14 @@ module.exports = buildSchema(`
 
     type RootQuery {
         events: [Event!]!
+        bookings: [Booking!]!
     }
 
     type RootMutation {
         createEvent(eventArgs: EventArgs): Event
         createUser(userArgs: UserArgs): User
+        bookEvent(eventID: ID!): Booking!
+        cancelBooking(bookingId: ID!): Event!
     }
 
     schema {
