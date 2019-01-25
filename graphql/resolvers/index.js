@@ -97,12 +97,26 @@ module.exports = {
                 return {
                     ...booking._doc,
                     _id: booking.id,
-                    createdAt: new Date(booking._doc.createdAt).toISOString,
-                    updatedAt: new Date(booking._doc.createdAt).toISOString
+                    createdAt: new Date(booking._doc.createdAt).toISOString(),
+                    updatedAt: new Date(booking._doc.createdAt).toISOString()
                 }
             })
         } catch (err) {
             throw err
+        }
+    },
+    bookEvent: async (args) => {
+        const fetchedEvent = await Event.findOne({ _id: args.eventId })
+        const booking = new Booking({
+            user: '5c43f44aacb554920d1bd26a',
+            event: fetchedEvent
+        })
+        const result = await booking.save()
+        return {
+            ...result._doc,
+            _id: result.id,
+            createdAt: new Date(booking._doc.createdAt).toISOString(),
+            updatedAt: new Date(booking._doc.updatedAt).toISOString(),
         }
     },
     createUser: (args) => {
